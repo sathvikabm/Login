@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login Page</title>
+<script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-auth.js"></script>
+<style>
+    /* Add some basic styling to make the buttons blue */
+    button {
+        background-color: #007bff; /* Blue background */
+        color: white; /* White text */
+        padding: 10px 20px; /* Some padding */
+        border: none; /* No border */
+        border-radius: 5px; /* Rounded corners */
+        cursor: pointer; /* Pointer/hand icon */
+        margin-top: 10px; /* Some space above the button */
+    }
+    button:hover {
+        background-color: #0056b3; /* Darker blue on hover */
+    }
+</style>
+</head>
+<body>
+    <form id="loginForm">
+        <label for="username">Email:</label>
+        <input type="text" id="username" autocomplete="username">
+        <br><br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" autocomplete="current-password">
+        <br><br>
+        <button type="button" onclick="login()">Submit</button>
+        <button type="button" onclick="window.location.href='register.html'">Register Here</button>
+    </form>
+
+    <script>
+        // TODO: Replace with your Firebase project's configuration object
+        const config = {
+             apiKey: "AIzaSyA_LOMMhUb8zfqRyuLzRZFfmOdmpwAVXho",
+             authDomain: "login-1601e.firebaseapp.com",
+             databaseURL: "https://login-1601e-default-rtdb.firebaseio.com",
+             projectId: "login-1601e",
+             storageBucket: "login-1601e.appspot.com",
+             messagingSenderId: "419519507095",
+             appId: "1:419519507095:web:e008126ac8c8e75396d7d2",
+             measurementId: "G-5SR35R3CYV"
+             };
+
+        firebase.initializeApp(config);
+        function login() {
+            var email = document.getElementById('username').value;
+            var password = document.getElementById('password').value;
+
+            // Sign in with Firebase Authentication
+            firebase.auth().signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Signed in
+                    alert('Login successful!');
+                })
+                .catch((error) => {
+                    var errorCode = error.code;
+                    var errorMessage = error.message;
+                    console.error("Error signing in with email and password", error);
+                    alert('Authentication failed: ' + errorMessage);
+                });
+        }
+
+    </script>
+</body>
+</html>

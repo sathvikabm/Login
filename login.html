@@ -4,39 +4,45 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Login Page</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-database.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-auth.js"></script>
 <style>
-    /* Add some basic styling to make the buttons blue */
     button {
-        background-color: #007bff; /* Blue background */
-        color: white; /* White text */
-        padding: 10px 20px; /* Some padding */
-        border: none; /* No border */
-        border-radius: 5px; /* Rounded corners */
-        cursor: pointer; /* Pointer/hand icon */
-        margin-top: 10px; /* Some space above the button */
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 10px;
     }
     button:hover {
-        background-color: #0056b3; /* Darker blue on hover */
+        background-color: #0056b3;
     }
 </style>
 </head>
 <body>
-    <form id="loginForm">
-        <label for="username">Email:</label>
-        <input type="text" id="username" autocomplete="username">
-        <br><br>
-        <label for="password">Password:</label>
-        <input type="password" id="password" autocomplete="current-password">
-        <br><br>
-        <button type="button" onclick="login()">Submit</button>
-        <button type="button" onclick="window.location.href='register.html'">Register Here</button>
+    <form id="loginForm" class="w-25 m-4">
+        <h2 class="mb-3">Login User</h2>
+        <div id="login-error-message" style="display: none; color: red;"></div>
+        <div class="form-floating mb-3">
+            <input type="email" class="form-control" id="username" onfocus="clearErrorMessage()" autocomplete="username" placeholder="email@domain.com" required>
+            <label for="username">Email</label>
+        </div>
+        <div class="form-floating mb-3">
+            <input type="password" class="form-control" id="password" onfocus="clearErrorMessage()"  autocomplete="current-password" placeholder="password" required>
+            <label for="password">Password</label>
+        </div>
+        <div id="error-message" class="alert alert-danger" style="display: none;"></div>
+        <button type="button" onclick="login()" class="btn btn-primary">Submit</button>
+        <button type="button" onclick="window.location.href='register.html'" class="btn btn-link">Register Here</button>
     </form>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
 
     <script>
-        // TODO: Replace with your Firebase project's configuration object
         const config = {
              apiKey: "AIzaSyA_LOMMhUb8zfqRyuLzRZFfmOdmpwAVXho",
              authDomain: "login-1601e.firebaseapp.com",
@@ -49,11 +55,19 @@
              };
 
         firebase.initializeApp(config);
+        function clearErrorMessage() {
+           var errorMessageDiv = document.getElementById('login-error-message');
+           errorMessageDiv.style.display = 'none'; // Hide the error message
+       }
+
+        function displayErrorMessage(message) {
+            var errorMessageDiv = document.getElementById('login-error-message');
+            errorMessageDiv.textContent = message; // Set the text content to the error message
+            errorMessageDiv.style.display = 'block'; // Show the error message
+        }
         function login() {
             var email = document.getElementById('username').value;
             var password = document.getElementById('password').value;
-
-            // Sign in with Firebase Authentication
             firebase.auth().signInWithEmailAndPassword(email, password)
                 .then((userCredential) => {
                     // Signed in
@@ -62,10 +76,79 @@
                 .catch((error) => {
                     var errorCode = error.code;
                     var errorMessage = error.message;
-                    console.error("Error signing in with email and password", error);
-                    alert('Authentication failed: ' + errorMessage);
+                    console.log("Error Code:", errorCode);
+
+                    // Use a switch statement to handle different error codes
+                    switch (errorCode) {
+                        case 'auth/user-not-found':
+                            displayErrorMessage('No user found with this email.');
+                            break;
+                        case 'auth/wrong-password':
+                            displayErrorMessage('Incorrect password.');
+                            break;
+                        case 'auth/user-disabled':
+                            displayErrorMessage('This user has been disabled.');
+                            break;
+                        case 'auth/too-many-requests':
+                            displayErrorMessage('Too many requests. Please try again later.');
+                            break;
+                        case 'auth/network-request-failed':
+                            displayErrorMessage('Network error. Please check your connection.');
+                            break;
+                        // Add more cases for other error codes as needed
+                        default:
+                            displayErrorMessage('An error occurred while attempting to login: ' + errorMessage);
+                    }
                 });
-        }
+            }
+
+
+
+
+
+
+//         function login() {
+//             var email = document.getElementById('username').value;
+//             var password = document.getElementById('password').value;
+//             var usersRef = firebase.database().ref('users');
+//             usersRef.orderByChild('email').equalTo(email).once('value', snapshot => {
+//             if (snapshot.exists()) {
+//             // Email found in the database, now try to sign in with the password
+//                 firebase.auth().signInWithEmailAndPassword(email, password)
+//                 .then((userCredential) => {
+//                 // Signed in
+//                      alert('Login successful!');
+//                 })
+//                 .catch((error) => {
+//                     var errorCode = error.code;
+//                     var errorMessage = error.message;
+//                     console.log("Error Code:", errorCode);
+
+//                     switch (errorCode) {
+//                         case 'auth/user-not-found':
+//                             displayErrorMessage('No user found with this email.');
+//                             break;
+//                         case 'auth/wrong-password':
+//                             displayErrorMessage('Incorrect password.');
+//                             break;
+//                         case 'auth/user-disabled':
+//                             displayErrorMessage('This user has been disabled.');
+//                             break;
+//                         case 'auth/too-many-requests':
+//                             displayErrorMessage('Too many requests. Please try again later.');
+//                             break;
+//                         case 'auth/network-request-failed':
+//                             displayErrorMessage('Network error. Please check your connection.');
+//                             break;
+//                         // Add more cases for other error codes as needed
+//                         default:
+//                             displayErrorMessage('An error occurred while attempting to login: ' + errorMessage);
+//                         }
+//                     });
+//                 }
+//             }
+//         }
+
 
     </script>
 </body>
